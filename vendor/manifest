@@ -14,12 +14,6 @@
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/codegangsta/cli",
-			"repository": "https://github.com/codegangsta/cli",
-			"revision": "a65b733b303f0055f8d324d805f393cd3e7a7904",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/coreos/go-etcd/etcd",
 			"repository": "https://github.com/coreos/go-etcd",
 			"revision": "de3514f25635bbfb024fdaf2a8d5f67378492675",

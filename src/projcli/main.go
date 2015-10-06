@@ -1,76 +1,59 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"os"
 	"projcli/django"
 )
 
+const (
+	defaultDjConfig = "django.yaml"
+)
+
 var (
-	app   *cli.App
-	tasks []string
+	configName string
+	flagSet    *flag.FlagSet
 )
 
 func init() {
-	tasks = []string{"newdjango"}
-	app = cli.NewApp()
-	app.Name = "Project CLI"
-	app.Usage = "Manage your Projects"
-	app.EnableBashCompletion = true
-	setupActions()
+	flagSet = flag.NewFlagSet("configuration", flag.ContinueOnError)
+	flagSet.StringVar(&configName, "conf", defaultDjConfig, "Create a new Django Application: projcli {cmd} -conf")
 }
 
-func setupActions() {
-	app.Commands = []cli.Command{
-		{
-			Name:    "newdjango",
-			Aliases: []string{"ndj"},
-			Usage:   "Create a new Django Application: projcli newdjango {appName}",
-			Action:  django.NewDjango,
-			BashComplete: func(c *cli.Context) {
-				// This will complete if no args are passed
-				if len(c.Args()) > 0 {
-					return
-				}
-				for _, t := range tasks {
-					fmt.Println(t)
-				}
-			},
-		},
-		{
-			Name:    "migrationsdjango",
-			Aliases: []string{"mdj"},
-			Usage:   "Make Django Migrations",
-			Action:  django.MigrationsDjango,
-			BashComplete: func(c *cli.Context) {
-				// This will complete if no args are passed
-				if len(c.Args()) > 0 {
-					return
-				}
-				for _, t := range tasks {
-					fmt.Println(t)
-				}
-			},
-		},
-		{
-			Name:    "migratedjango",
-			Aliases: []string{"midj"},
-			Usage:   "Migrate Django Application",
-			Action:  django.MigrateDjango,
-			BashComplete: func(c *cli.Context) {
-				// This will complete if no args are passed
-				if len(c.Args()) > 0 {
-					return
-				}
-				for _, t := range tasks {
-					fmt.Println(t)
-				}
-			},
-		},
-	}
+func usageFunc() {
+	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	flag.PrintDefaults()
+	fmt.Fprintln(os.Stderr, "  -h   : show help usage")
 }
 
 func main() {
-	app.Run(os.Args)
+	flag.Usage = usageFunc
+
+	// flag.Parse()
+
+	// if flag.NFlag() == 0 {
+	// 	// usageFunc()
+	//   os.Exit(1)
+	// }
+
+	// if flag.NFlag() == 0 {
+	// 	flag.Usage()
+	// 	os.Exit(1)
+	// }
+
+	// cmdName := flag.Args()[0]
+	cmdName := os.Args[1]
+	flagSet.Parse(os.Args[2:])
+
+	switch cmdName {
+	case "djnew":
+		django.NewDjango(configName)
+	case "djmigrations":
+		django.MigrationsDjango(configName)
+	case "djmigrate":
+		django.MigrateDjango(configName)
+	default:
+		flag.Usage()
+	}
 }
