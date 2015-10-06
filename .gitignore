@@ -1,0 +1,5 @@
+projcli.iml
+.idea
+bin
+pkg
+vendor/src
