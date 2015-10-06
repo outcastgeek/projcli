@@ -17,13 +17,14 @@ var (
 )
 
 func init() {
+	flagSet = flag.NewFlagSet("configuration", flag.ContinueOnError)
+	flagSet.StringVar(&configName, "djconf", defaultDjConfig, "Manage Django Application: projcli {djcmd} -djconf")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		fmt.Fprintln(os.Stderr, "  -h   : show help usage")
+		flagSet.PrintDefaults()
 	}
-	flagSet = flag.NewFlagSet("configuration", flag.ContinueOnError)
-	flagSet.StringVar(&configName, "conf", defaultDjConfig, "Create a new Django Application: projcli {cmd} -conf")
 }
 
 func main() {
@@ -38,11 +39,11 @@ func main() {
 
 	switch cmdName {
 	case "djnew":
-		django.NewDjango(configName)
+		django.New(configName)
 	case "djmigrations":
-		django.MigrationsDjango(configName)
+		django.Migrations(configName)
 	case "djmigrate":
-		django.MigrateDjango(configName)
+		django.Migrate(configName)
 	default:
 		flag.Usage()
 	}

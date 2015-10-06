@@ -31,7 +31,7 @@ func setup(configName string) {
 	}
 }
 
-func NewDjango(configName string) {
+func New(configName string) {
 	setup(configName)
 	projectName := viper.Get("project")
 	fmt.Println("Creating a new Django Application with name: ", projectName)
@@ -44,7 +44,7 @@ func NewDjango(configName string) {
 	utils.RunCmd(cmd, args)
 }
 
-func MigrationsDjango(configName string) {
+func Migrations(configName string) {
 	setup(configName)
 	fmt.Println("Making Migrations...")
 	cmd := workDir + "/manage.py"
@@ -52,7 +52,7 @@ func MigrationsDjango(configName string) {
 	utils.RunCmd(cmd, args)
 }
 
-func MigrateDjango(configName string) {
+func Migrate(configName string) {
 	setup(configName)
 	fmt.Println("Migrating Database...")
 	cmd := workDir + "/manage.py"
