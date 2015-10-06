@@ -42,13 +42,6 @@ func NewDjango(configName string) {
 	cmd = "cp"
 	args = []string{workDir + "/" + configName, workDir + "/" + projectName.(string)}
 	utils.RunCmd(cmd, args)
-	// if len(c.Args()) > 0 {
-	// 	projectName := c.Args()[0]
-	// 	fmt.Println("Creating a new Django Application with name: ", projectName)
-	// 	cmd := "django-admin.py"
-	// 	args := []string{"startproject", projectName.(string)}
-	// 	utils.RunCmd(cmd, args)
-	// }
 }
 
 func MigrationsDjango(configName string) {
