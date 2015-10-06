@@ -3,53 +3,59 @@ package django
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/spf13/viper"
 	"os"
-	"os/exec"
+	"projcli/utils"
 )
 
-func NewDjango(c *cli.Context) {
-	if len(c.Args()) > 0 {
-		projectName := c.Args()[0]
-		fmt.Println("Creating a new Django Application with name: ", projectName)
-		cmd := "django-admin.py"
-		args := []string{"startproject", projectName}
-		if err := exec.Command(cmd, args...).Run(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		fmt.Println("Successfully created Django Application with name: ", projectName)
+var workDir string
+
+func init() {
+	wd, err := os.Getwd()
+	if err != nil {
+		utils.HandleErr(err)
 	}
+	workDir = wd
+}
+
+func setup() {
+	viper.AddConfigPath(workDir)
+	viper.SetConfigName("django")
+	viper.SetConfigType("yaml")
+	viper.Set("Verbose", true)
+	err := viper.ReadInConfig()
+	if err != nil {
+		utils.HandleErr(err)
+	}
+}
+
+func NewDjango(c *cli.Context) {
+	setup()
+	projectName := viper.Get("project")
+	// projectName := c.Args()[0]
+	fmt.Println("Creating a new Django Application with name: ", projectName)
+	cmd := "django-admin.py"
+	args := []string{"startproject", projectName.(string)}
+	utils.RunCmd(cmd, args)
+	// if len(c.Args()) > 0 {
+	// 	projectName := c.Args()[0]
+	// 	fmt.Println("Creating a new Django Application with name: ", projectName)
+	// 	cmd := "django-admin.py"
+	// 	args := []string{"startproject", projectName.(string)}
+	// 	utils.RunCmd(cmd, args)
+	// }
 }
 
 func MigrationsDjango(c *cli.Context) {
-	currDir, err := os.Getwd()
-	if err != nil {
-		handleErr(err)
-	}
 	fmt.Println("Making Migrations...")
-	cmd := currDir + "/manage.py"
+	cmd := workDir + "/manage.py"
 	args := []string{"makemigrations"}
-	if err = exec.Command(cmd, args...).Run(); err != nil {
-		handleErr(err)
-	}
-	fmt.Println("Successfully generated Migrations")
+	utils.RunCmd(cmd, args)
 }
 
 func MigrateDjango(c *cli.Context) {
-	currDir, err := os.Getwd()
-	if err != nil {
-		handleErr(err)
-	}
 	fmt.Println("Migrating Database...")
-	cmd := currDir + "/manage.py"
+	cmd := workDir + "/manage.py"
 	args := []string{"migrate"}
-	if err = exec.Command(cmd, args...).Run(); err != nil {
-		handleErr(err)
-	}
-	fmt.Println("Successfully migrated Database!")
-}
-
-func handleErr(err error) {
-	fmt.Fprintln(os.Stderr, err)
-	os.Exit(1)
+	utils.RunCmd(cmd, args)
 }
