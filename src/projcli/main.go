@@ -44,6 +44,8 @@ func main() {
 		django.Migrations(configName)
 	case "djmigrate":
 		django.Migrate(configName)
+	case "djapp":
+		django.App(configName)
 	default:
 		flag.Usage()
 	}

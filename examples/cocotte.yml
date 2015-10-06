@@ -1,0 +1,10 @@
+# django configuration
+
+project: hollistic
+applications:
+  - fashion:
+    - habillement
+    - accessory
+  - health:
+    - beauty
+    - medecine

@@ -59,3 +59,24 @@ func Migrate(configName string) {
 	args := []string{"migrate"}
 	utils.RunCmd(cmd, args)
 }
+
+func App(configName string) {
+	setup(configName)
+	applications := viper.Get("applications").([]interface{})
+	numOfApps := len(applications)
+	done := make(chan bool, numOfApps)
+	for _, app := range applications {
+		for appName, _ := range app.(map[interface{}]interface{}) {
+			go func(appName string) {
+				fmt.Println("Creating Application: ", appName)
+				cmd := workDir + "/manage.py"
+				args := []string{"startapp", appName}
+				utils.RunCmd(cmd, args)
+				done <- true
+			}(appName.(string))
+		}
+	}
+	for _ = range applications {
+		<-done
+	}
+}
