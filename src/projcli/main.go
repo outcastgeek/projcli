@@ -18,7 +18,7 @@ var (
 
 func init() {
 	flagSet = flag.NewFlagSet("configuration", flag.ContinueOnError)
-	flagSet.StringVar(&configName, "djconf", defaultDjConfig, "Manage Django Application: projcli {djcmd} -djconf")
+	flagSet.StringVar(&configName, "conf", defaultDjConfig, "Manage Project: projcli {cmd} -conf")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()

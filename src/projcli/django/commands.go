@@ -3,9 +3,11 @@ package django
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"projcli/utils"
+	"time"
 )
 
 var workDir string
@@ -32,6 +34,14 @@ func setup(configName string) {
 }
 
 func New(configName string) {
+	pipChan := make(chan string, 1)
+	go func() {
+		pipTxt, err := utils.HttpGet("bootstrap.pypa.io/get-pip.py")
+		if err != nil {
+			utils.HandleErr(err)
+		}
+		pipChan <- pipTxt
+	}()
 	setup(configName)
 	projectName := viper.Get("project")
 	fmt.Println("Creating a new Django Application with name: ", projectName)
@@ -42,6 +52,23 @@ func New(configName string) {
 	cmd = "cp"
 	args = []string{workDir + "/" + configName, workDir + "/" + projectName.(string)}
 	utils.RunCmd(cmd, args)
+	select {
+	case pipTxt := <-pipChan:
+		pipPath := workDir + "/" + projectName.(string) + "/get-pip.py"
+		requirementsPath := workDir + "/" + projectName.(string) + "/requirements.txt"
+		ioutil.WriteFile(pipPath, []byte(pipTxt), 0755)
+		ioutil.WriteFile(requirementsPath, []byte(Requirements), 0644)
+		fmt.Println("Installing pip...")
+		cmd = pipPath
+		args = []string{}
+		utils.RunCmd(cmd, args)
+		fmt.Println("Installing requirements...")
+		cmd = "pip"
+		args = []string{"install", "-r", requirementsPath}
+		utils.RunCmd(cmd, args)
+	case <-time.After(1 * time.Second):
+		fmt.Println("Could not install pip")
+	}
 }
 
 func Migrations(configName string) {

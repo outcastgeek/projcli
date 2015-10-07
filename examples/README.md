@@ -1,7 +1,7 @@
 **STEPS:**
 
-* projcli djnew -djconf cocotte.yml
+* projcli djnew -conf cocotte.yml
 * cd hollistic
-* projcli djapp -djconf cocotte.yml
-* projcli djmigrations -djconf cocotte.yml
-* projcli djmigrate -djconf cocotte.yml
+* projcli djapp -conf cocotte.yml
+* projcli djmigrations -conf cocotte.yml
+* projcli djmigrate -conf cocotte.yml
